@@ -1,4 +1,5 @@
 import React from "react";
+import Button from "./common/Button";
 import "./Steps.css";
 
 const Step = text => <div className="step-text my-3">{text}</div>;
@@ -11,11 +12,7 @@ function Steps({ setStep }) {
       {Step("2) Upload Your Code")}
       {Step("3) Deploy")}
 
-      <div className="get-started mt-4 mx-auto d-flex justify-content-center" onClick={() => setStep(0)}>
-        <div className="my-auto">
-            Get Started
-        </div>
-      </div>
+      <Button text="Get Started" onClick={() => setStep(0)} />
     </div>
   );
 }

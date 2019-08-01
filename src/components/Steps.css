@@ -9,19 +9,3 @@
   font-size: 28px;
 }
 
-.get-started {
-  border: 1px solid yellow;
-  color: yellow;
-  font-size: 18px;
-  text-transform: uppercase;
-  height: 50px;
-  width: 50%;
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: bold;
-}
-
-.get-started:hover {
-    background-color: white;
-    color: black;
-}
