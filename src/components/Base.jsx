@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Steps from "./Steps";
 import Domain from "./Domain";
+import UploadCode from "./UploadCode";
 
 function Base() {
   const [step, setStep] = useState(-1);
@@ -11,7 +12,10 @@ function Base() {
         return <Steps setStep={setStep} />;
 
       case 0:
-        return <Domain />;
+        return <Domain setStep={setStep} />;
+      
+      case 1:
+        return <UploadCode />;
 
       default:
         return null;
