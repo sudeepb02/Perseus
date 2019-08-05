@@ -15,10 +15,13 @@ function UploadCode() {
     console.log("event", event);
     setFiles(acceptedFiles);
     toggleFilesUploaded(true);
-};
+  };
 
-console.log("files", files);
-//   useEffect(() => {
+  const deploy = () => {
+    console.log("files", files);
+  };
+
+  //   useEffect(() => {
   //     const uploader = document.getElementById("uploader");
   //     document.addEventListener(uploader, "")
   //   });
@@ -27,8 +30,22 @@ console.log("files", files);
     <div className="d-flex flex-column domain mt-3 animated fadeIn">
       <Instruction text="Step 2: Upload Your Code" />
       <div className="d-flex flex-column file-type mx-auto">
-        <div className={`type-select py-2 px-3 my-4 ${activeType === TYPES[0] ? "active-type" : ""}`} onClick={() => setActiveType(TYPES[0])}>Upload Single File</div>
-        <div className={`type-select py-2 px-3 ${activeType === TYPES[1] ? "active-type" : ""}`} onClick={() => setActiveType(TYPES[1])}>Upload Directory</div>
+        <div
+          className={`type-select py-2 px-3 my-4 ${
+            activeType === TYPES[0] ? "active-type" : ""
+          }`}
+          onClick={() => setActiveType(TYPES[0])}
+        >
+          Upload Single File
+        </div>
+        <div
+          className={`type-select py-2 px-3 ${
+            activeType === TYPES[1] ? "active-type" : ""
+          }`}
+          onClick={() => setActiveType(TYPES[1])}
+        >
+          Upload Directory
+        </div>
       </div>
       <Dropzone onDrop={onDrop}>
         {({ getRootProps, getInputProps, isFileDialogActive, isFocused }) => {
@@ -48,7 +65,10 @@ console.log("files", files);
             }
           };
 
-          const selectText = activeType === TYPES[0] ? "Click to select file" : "Click to select directory"
+          const selectText =
+            activeType === TYPES[0]
+              ? "Click to select file"
+              : "Click to select directory";
 
           return (
             <div className="upload-file mx-auto mt-4" {...getRootProps()}>
@@ -67,6 +87,8 @@ console.log("files", files);
       <div className="allow-notice mx-auto mt-4">
         Allow a minute for larger directories to load
       </div>
+
+      <Button onClick={deploy} disabled={!files} text="Deploy" />
     </div>
   );
 }
