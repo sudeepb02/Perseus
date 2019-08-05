@@ -1,0 +1,10 @@
+.upload-file {
+    width: 400px;
+    max-height: 400px;
+    border: 1px dashed white;
+    cursor: pointer;
+}
+
+.allow-notice {
+    font-size: 10px;
+}
