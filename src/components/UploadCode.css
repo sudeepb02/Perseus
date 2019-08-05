@@ -8,3 +8,18 @@
 .allow-notice {
     font-size: 10px;
 }
+
+.file-type {
+    width: 400px;
+}
+
+.type-select {
+    border: 1px solid white;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.active-type {
+    background: white;
+    color: black;
+}
