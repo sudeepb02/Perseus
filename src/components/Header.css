@@ -11,3 +11,25 @@
 .subheader-text {
   margin-top: 24px;
 }
+
+.portis {
+  color: yellow;
+  top: 24px;
+  left: 30px;
+  text-transform: capitalize;
+  font-size: 12px;
+  cursor: pointer;
+  width: 100px;
+}
+
+.portis:hover {
+  color: white;
+}
+
+.wallet {
+  height: 20px;
+}
+
+.portis-text {
+  margin-top: 2px;
+}

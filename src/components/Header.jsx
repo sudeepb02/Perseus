@@ -1,5 +1,7 @@
 import React from "react";
 import logo from "../assets/planet.png";
+import wallet from "../assets/wallet.png";
+import { portis } from "./Steps";
 import "./Header.css";
 
 function Header() {
@@ -13,6 +15,14 @@ function Header() {
         <div className="subheader-text">
             Decentralized. Permanent. Interplanetary. Hosting.
         </div>
+      <div className="position-relative">
+        <div className="position-absolute portis d-flex" onClick={() => portis.showPortis()}>
+          <img src={wallet} className="img-fluid wallet" />
+          <div className="ml-1 portis-text">
+            Portis
+          </div>
+        </div>
+      </div>
       </div>
     </div>
   );
