@@ -3,6 +3,7 @@ import Instruction from "./common/Instruction";
 import Button from "./common/Button";
 import Dropzone from "react-dropzone";
 import Arweave from "arweave/web";
+import jwk from "../arweave-keyfile.json";
 import "./UploadCode.css";
 
 const TYPES = ["Single", "Directory"];
@@ -11,21 +12,53 @@ function UploadCode() {
   const [files, setFiles] = useState(null);
   const [filesUploaded, toggleFilesUploaded] = useState(false);
   const [activeType, setActiveType] = useState(TYPES[0]);
+  const [transactionId, setTransactionId] = useState("");
 
   const onDrop = (acceptedFiles, rejectedFiles, event) => {
-    console.log("event", event);
-    setFiles(acceptedFiles);
     toggleFilesUploaded(true);
+
+    const file = event.target.files[0];
+    const r = new FileReader();
+    r.onload = readSuccess;
+
+    function readSuccess(evt) {
+      setFiles(evt.target.result);
+    }
+    r.readAsText(file);
   };
 
-  const deploy = () => {
-    console.log("files", files);
-    // const arweave = Arweave.init({
-    //   host: "127.0.0.1",
-    //   port: 1984
-    // });
+  const deploy = async () => {
+    const arweave = Arweave.init({
+      host: "arweave.net",
+      port: "80"
+    });
 
+    arweave.wallets.jwkToAddress(jwk).then(address => {
+      console.log(address);
+    });
 
+    arweave.wallets
+      .getBalance("a2tBnI_YOYnXg1IWabrfTb8nGzPQA67CrvATDym0NYM")
+      .then(balance => {
+        let winston = balance;
+        let ar = arweave.ar.winstonToAr(balance);
+
+        console.log("balance", ar);
+      });
+
+    let transaction = await arweave.createTransaction(
+      {
+        data: files
+      },
+      jwk
+    );
+
+    transaction.addTag("Content-Type", "text/html");
+    await arweave.transactions.sign(transaction, jwk);
+
+    const response = await arweave.transactions.post(transaction);
+    let txId = JSON.parse(response.config.data)["id"];
+    setTransactionId(txId);
   };
 
   return (
@@ -56,8 +89,6 @@ function UploadCode() {
               return (
                 <input
                   {...getInputProps()}
-                  //   directory=""
-                  //   webkitdirectory=""
                   type="file"
                   id="uploader"
                 />
@@ -91,6 +122,14 @@ function UploadCode() {
       </div>
 
       <Button onClick={deploy} disabled={!files} text="Deploy" />
+      {transactionId && (
+        <div className="mt-3 mx-auto">
+          Deployed{" "}
+          <a href={`https://arweave.net/${transactionId}`}>
+            right here shortly{" "}
+          </a>
+        </div>
+      )}
     </div>
   );
 }
