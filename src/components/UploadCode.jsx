@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import Instruction from "./common/Instruction";
 import Button from "./common/Button";
 import Dropzone from "react-dropzone";
+import Arweave from "arweave/web";
 import "./UploadCode.css";
 
 const TYPES = ["Single", "Directory"];
@@ -19,12 +20,13 @@ function UploadCode() {
 
   const deploy = () => {
     console.log("files", files);
-  };
+    // const arweave = Arweave.init({
+    //   host: "127.0.0.1",
+    //   port: 1984
+    // });
 
-  //   useEffect(() => {
-  //     const uploader = document.getElementById("uploader");
-  //     document.addEventListener(uploader, "")
-  //   });
+
+  };
 
   return (
     <div className="d-flex flex-column domain mt-3 animated fadeIn">
@@ -54,8 +56,8 @@ function UploadCode() {
               return (
                 <input
                   {...getInputProps()}
-                  directory=""
-                  webkitdirectory=""
+                  //   directory=""
+                  //   webkitdirectory=""
                   type="file"
                   id="uploader"
                 />
@@ -68,7 +70,7 @@ function UploadCode() {
           const selectText =
             activeType === TYPES[0]
               ? "Click to select file"
-              : "Click to select directory";
+              : "Click to select directory root";
 
           return (
             <div className="upload-file mx-auto mt-4" {...getRootProps()}>
