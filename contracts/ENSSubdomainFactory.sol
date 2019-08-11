@@ -1,4 +1,4 @@
-pragma solidity >=0.4.21 < 0.6.0;
+pragma solidity ^0.4.24;
 
 import './ENSRegistry.sol';
 import './ENSResolver.sol';
@@ -32,7 +32,7 @@ contract ENSSubdomainFactory {
   /**
    * @dev Throws if called by any account other than the owner
    */
-  modifier ownerOnly() {
+  modifier onlyOwner() {
       require(msg.sender == owner);
       _;
   }
@@ -64,13 +64,13 @@ contract ENSSubdomainFactory {
 
       //Verify if it is free
       require(registry.owner(subdomainNamehash) == address(0) ||
-          registry.owner(subdomainNamehash) = msg.sender, 'Subdomain already registered');
+          registry.owner(subdomainNamehash) == msg.sender, "Subdomain already registered");
 
       //Create new subdomain and set this contract as the owners
       registry.setSubnodeOwner(domainNamehash, subdomainNamehash, address(this));
 
       //Set Public resolver for this subdomainNamehash
-      resolver.setResolver(subdomainNamehash, resolver);
+      registry.setResolver(subdomainNamehash, resolver);
 
       //Set destination hash
       resolver.setContenthash(subdomainNamehash, _target);
@@ -84,8 +84,8 @@ contract ENSSubdomainFactory {
 
    /**
    * @dev Return the owner of a domain
-   * @param _domain
-   * @param _topdomain
+   * @param _domain - Domain name 
+   * @param _topdomain - Top level domain name
    */
    function domainOwner(string _domain, string _topdomain) public view returns (address) {
       bytes32 topdomainNamehash = keccak256(abi.encodePacked(emptyNamehash, keccak256(abi.encodePacked(_topdomain))));
@@ -95,9 +95,9 @@ contract ENSSubdomainFactory {
 
    /**
    * @dev Returns the owner of a subdomain
-   * @param _subdomain
-   * @param _domain
-   * @param _topdomain
+   * @param _subdomain - SUbdomain name
+   * @param _domain - Main domain name
+   * @param _topdomain - Top level domain name
    */
    function subdomainOwner(string _subdomain, string _domain, string _topdomain) public view returns (address) {
       bytes32 topdomainNamehash = keccak256(abi.encodePacked(emptyNamehash, keccak256(abi.encodePacked(_topdomain))));
@@ -108,9 +108,9 @@ contract ENSSubdomainFactory {
 
    /**
    * @dev Returns the target contenthash
-   * @param _subdomain
-   * @param _domain
-   * @param _topdomain
+   * @param _subdomain - Subdomain name
+   * @param _domain - Main domain name
+   * @param _topdomain - Top level domain name
    */
    function subdomainTarget(string _subdomain, string _domain, string _topdomain) public view returns (bytes) {
       bytes32 topdomainNamehash = keccak256(abi.encodePacked(emptyNamehash, keccak256(abi.encodePacked(_topdomain))));
@@ -126,7 +126,7 @@ contract ENSSubdomainFactory {
    * @param _node - namehash of the domainN
    * @param _owner - address of new owner
    */
-   function transferDomainOwnership(bytes _node, address _owner) public onlyOwner {
+   function transferDomainOwnership(bytes32 _node, address _owner) public onlyOwner {
       require(!locked);
       registry.setOwner(_node, _owner);
    }
@@ -136,7 +136,7 @@ contract ENSSubdomainFactory {
    */
    function lockDomainOwnershipTransfers() public onlyOwner {
       require(!locked);
-      locker = true;
+      locked = true;
       emit DomainTransfersLocked();
    }
 
@@ -165,7 +165,7 @@ contract ENSSubdomainFactory {
    * @param _owner - Address of the new owner of Contract
    */
    function transferContractOwnership(address _owner) public onlyOwner {
-      require(_owner ! address(0), "Cannot transfer to address(0)");
+      require(_owner != address(0), "Cannot transfer to address(0)");
       emit OwnershipTransferred(owner, _owner);
       owner = _owner;
    }

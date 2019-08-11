@@ -1,4 +1,4 @@
-pragma solidity >=0.4.21 <0.6.0;
+pragma solidity ^0.4.24;
 
 import './ENSResolver.sol';
 
@@ -9,7 +9,7 @@ import './ENSResolver.sol';
 contract ENSResolverMock is ENSResolver {
   mapping(bytes32 => bytes) public targets;
 
-  function setContenthash(bytes32 _node, bytes _hash) {
+  function setContenthash(bytes32 _node, bytes _hash) public {
     targets[_node] = _hash;
   }
 

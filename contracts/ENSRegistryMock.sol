@@ -1,4 +1,4 @@
-pragma solidity >=0.4.21 < 0.6.0;
+pragma solidity ^0.4.24;
 
 import './ENSRegistry.sol';
 
@@ -8,9 +8,9 @@ import './ENSRegistry.sol';
 
 contract ENSRegistryMock is ENSRegistry {
   mapping(bytes32 => address) owners;
-  mapping(bytes32 => bytes) public resolvers;
+  mapping(bytes32 => address) public resolvers;
 
-  function setOwner(bytes32 _node, addresss _owner) public {
+  function setOwner(bytes32 _node, address _owner) public {
     owners[_node] = _owner;
   }
 
@@ -18,7 +18,7 @@ contract ENSRegistryMock is ENSRegistry {
     owners[keccak256(abi.encodePacked(_node, _label))] = _owner;
   }
 
-  function setResolver(bytes32 _node, addresss _resolver) public {
+  function setResolver(bytes32 _node, address _resolver) public {
     resolvers[_node] = _resolver;
   }
 
@@ -26,7 +26,7 @@ contract ENSRegistryMock is ENSRegistry {
     return owners[_node];
   }
 
-  function resolver(bytes32 _node) public view returns (bytes) {
+  function resolver(bytes32 _node) public view returns (address) {
     return resolvers[_node];
   }
 }
