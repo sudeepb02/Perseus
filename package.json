@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@ensdomains/ens": "^0.3.5",
+    "@ensdomains/ethregistrar": "^1.2.2",
     "@portis/web3": "^2.0.0-beta.34",
     "animate.css": "^3.7.2",
     "arweave": "^1.4.1",
@@ -12,6 +14,8 @@
     "react-dropzone": "^10.1.7",
     "react-scripts": "3.0.1",
     "react-transition-group": "^4.2.1",
+    "truffle-hdwallet-provider": "^1.0.16",
+    "eth-ens-namehash": "^2.0.0",
     "web3": "^1.2.0"
   },
   "scripts": {
