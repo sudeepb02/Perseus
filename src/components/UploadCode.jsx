@@ -4,9 +4,12 @@ import Button from "./common/Button";
 import Dropzone from "react-dropzone";
 import Arweave from "arweave/web";
 import jwk from "../arweave-keyfile.json";
+import { addToIpfs } from "../ipfs";
 import "./UploadCode.css";
 
 const TYPES = ["Single", "Directory"];
+// const htmlfile = (hash) => `<!DOCTYPE HTML>< html lang = "en-US" ><head> <meta charset="UTF-8"><meta http-equiv="refresh" content="0; url=https://arweave.net/${hash}"><script type="text/javascript">window.location.href = "https://arweave.net/${hash}"</script><title>Page Redirection</title></head><body>If you are not redirected automatically, follow this <a href='https://arweave.net/${hash}'>Click if not automatically redirected</a>.</body></html>`
+
 
 function UploadCode() {
   const [files, setFiles] = useState(null);
@@ -59,6 +62,8 @@ function UploadCode() {
     const response = await arweave.transactions.post(transaction);
     let txId = JSON.parse(response.config.data)["id"];
     setTransactionId(txId);
+
+    await addToIpfs(txId);
   };
 
   return (
