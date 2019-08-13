@@ -41,7 +41,7 @@ contract EthRegistrarSubdomainRegistrar is AbstractSubdomainRegistrar {
 
     mapping (bytes32 => Domain) domains;
 
-    constructor(ENS ens) AbstractSubdomainRegistrar(ens) public { }
+    constructor(ENS _ens) AbstractSubdomainRegistrar(_ens) public { }
 
     /**
      * @dev owner returns the address of the account that controls a domain.

@@ -1,0 +1,31 @@
+pragma solidity ^0.5.0;
+
+import "@ensdomains/ens/contracts/ENS.sol";
+import "@ensdomains/ens/contracts/ENSRegistry.sol";
+import "./Resolver.sol";
+
+/**
+ * @dev A test resolver implementation
+ */
+contract TestResolver is Resolver {
+    ENS ens;
+
+    mapping (bytes32 => bytes) targets;
+
+    constructor(ENS _ens) public {
+        ens = _ens;
+    }
+
+    function supportsInterface(bytes4 interfaceID) public pure returns (bool) {
+        return interfaceID == 0x01ffc9a7 || interfaceID == 0xbc1c58d1;
+    }
+
+    function setContenthash(bytes32 node, bytes memory hash) public {
+        require(ens.owner(node) == msg.sender);
+        targets[node] = hash;
+    }
+
+    function contenthash(bytes32 node) public view returns (bytes memory) {
+        return targets[node];
+    }
+}
