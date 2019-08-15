@@ -5,7 +5,8 @@
 
 .main-button {
   border: 1px solid yellow;
-  color: yellow;
+  color: white;
+  background:black;
   font-size: 18px;
   text-transform: uppercase;
   height: 50px;
