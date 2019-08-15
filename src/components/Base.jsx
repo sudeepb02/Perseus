@@ -4,18 +4,34 @@ import Domain from "./Domain";
 import UploadCode from "./UploadCode";
 
 function Base() {
-  const [step, setStep] = useState(-1);
+  const [step, setStep] = useState(1);
+  // const [step, setStep] = useState(-1);
+  const [activeAddress, setActiveAddress] = useState("");
+  const [ipfsHash, setIpfsHash] = useState("");
 
   const getView = () => {
     switch (step) {
       case -1:
-        return <Steps setStep={setStep} />;
+        return <Steps setStep={setStep} setActiveAddress={setActiveAddress} />;
 
       case 0:
-        return <Domain setStep={setStep} />;
-      
+        return (
+          <UploadCode
+            setStep={setStep}
+            setIpfsHash={setIpfsHash}
+            ipfsHash={ipfsHash}
+            activeAddress={activeAddress}
+          />
+        );
+
       case 1:
-        return <UploadCode />;
+        return (
+          <Domain
+            ipfsHash={ipfsHash}
+            setStep={setStep}
+            activeAddress={activeAddress}
+          />
+        );
 
       default:
         return null;
