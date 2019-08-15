@@ -3,13 +3,13 @@ import "./common.css";
 
 function Button({ text, onClick, className, disabled }) {
   return (
-    <div
+    <button
       className={`main-button mt-4 mx-auto d-flex justify-content-center ${className}`}
       onClick={onClick}
       disabled={disabled}
     >
-      <div className="my-auto">{text}</div>
-    </div>
+      <div className={`my-auto ${disabled ? "text-muted" : ""}`}>{text}</div>
+    </button>
   );
 }
 

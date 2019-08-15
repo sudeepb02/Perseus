@@ -8,11 +8,21 @@ import "./UploadCode.css";
 
 const TYPES = ["Single", "Directory"];
 
-function UploadCode() {
+const IPFS = require("ipfs-api");
+const ipfs = new IPFS({
+  host: "ipfs.infura.io",
+  port: 5001,
+  protocol: "https"
+});
+
+function UploadCode({ setIpfsHash, ipfsHash, setStep }) {
   const [files, setFiles] = useState(null);
   const [filesUploaded, toggleFilesUploaded] = useState(false);
   const [activeType, setActiveType] = useState(TYPES[0]);
   const [transactionId, setTransactionId] = useState("");
+  const [ipfsReturn, receiveIpfsReturn] = useState(null); // delete?
+  const [nextStep, readyNextStep] = useState(false);
+  const [uploadInProgress, toggleUploadInProgress] = useState(false);
 
   const onDrop = (acceptedFiles, rejectedFiles, event) => {
     toggleFilesUploaded(true);
@@ -27,14 +37,15 @@ function UploadCode() {
     r.readAsText(file);
   };
 
-  const deploy = async () => {
+  const upload = async () => {
+    toggleUploadInProgress(true);
     const arweave = Arweave.init({
       host: "arweave.net",
       port: "80"
     });
 
     arweave.wallets.jwkToAddress(jwk).then(address => {
-      console.log(address);
+      // console.log(address);
     });
 
     arweave.wallets
@@ -59,11 +70,37 @@ function UploadCode() {
     const response = await arweave.transactions.post(transaction);
     let txId = JSON.parse(response.config.data)["id"];
     setTransactionId(txId);
+    
+    await addToIpfs(txId);
+  };
+  
+  useEffect(() => {
+    if (ipfsHash) {
+      readyNextStep(true);
+      toggleUploadInProgress(false);
+      console.log("in useeffect ipfs hash", ipfsHash);
+    }
+  }, [ipfsHash]);
+  
+  const addToIpfs = async hash => {
+    const testHash = "QmYZmKiV1ZsxPuanPfDXavDzGNJYV2BHnXdrNpfc2WU8Ja";
+    const htmlfile = hash =>
+    `<!DOCTYPE HTML>< html lang = "en-US" ><head> <meta charset="UTF-8"><meta http-equiv="refresh" content="0; url=https://arweave.net/${hash}"><script type="text/javascript">window.location.href = "https://arweave.net/${hash}"</script><title>Page Redirection</title></head><body>If you are not redirected automatically, follow this <a href='https://arweave.net/${hash}'>Click if not automatically redirected</a>.</body></html>`;
+    
+    const file = htmlfile(hash);
+    const buffer = Buffer.from(file, "utf8");
+    await ipfs.add(buffer, (err, ipfsHash) => {
+      setIpfsHash(ipfsHash[0].path);
+      console.log("ipfs hash[0].path", ipfsHash[0].path)
+      console.log("ipfs hash[path]", ipfsHash["path"])
+    });
+
+    return true;
   };
 
   return (
     <div className="d-flex flex-column domain mt-3 animated fadeIn">
-      <Instruction text="Step 2: Upload Your Code" />
+      <Instruction text="Step 1: Upload Your Code" />
       <div className="d-flex flex-column file-type mx-auto">
         <div
           className={`type-select py-2 px-3 my-4 ${
@@ -74,25 +111,18 @@ function UploadCode() {
           Upload Single File
         </div>
         <div
-          className={`type-select py-2 px-3 ${
+          className={`text-muted type-select py-2 px-3 ${
             activeType === TYPES[1] ? "active-type" : ""
           }`}
-          onClick={() => setActiveType(TYPES[1])}
         >
-          Upload Directory
+          Upload Directory *coming soon
         </div>
       </div>
       <Dropzone onDrop={onDrop}>
         {({ getRootProps, getInputProps, isFileDialogActive, isFocused }) => {
           const getInput = () => {
             if (activeType === TYPES[1]) {
-              return (
-                <input
-                  {...getInputProps()}
-                  type="file"
-                  id="uploader"
-                />
-              );
+              return <input {...getInputProps()} type="file" id="uploader" />;
             } else {
               return <input {...getInputProps()} type="file" id="uploader" />;
             }
@@ -117,18 +147,15 @@ function UploadCode() {
           );
         }}
       </Dropzone>
-      <div className="allow-notice mx-auto mt-4">
-        Allow a minute for larger directories to load
-      </div>
 
-      <Button onClick={deploy} disabled={!files} text="Deploy" />
-      {transactionId && (
-        <div className="mt-3 mx-auto">
-          Deployed{" "}
-          <a href={`https://arweave.net/${transactionId}`}>
-            right here shortly{" "}
-          </a>
-        </div>
+      {!uploadInProgress ? (
+        nextStep ? (
+          <Button onClick={() => setStep(1)} text="Next" />
+        ) : (
+          <Button onClick={upload} disabled={!files} text="Upload" />
+        )
+      ) : (
+        <div className="mx-auto mt-4">Uploading...</div>
       )}
     </div>
   );

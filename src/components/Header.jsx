@@ -1,7 +1,7 @@
 import React from "react";
 import logo from "../assets/planet.png";
 import wallet from "../assets/wallet.png";
-import { portis } from "./Steps";
+import { portis } from "../services/web3";
 import "./Header.css";
 
 function Header() {
