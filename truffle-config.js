@@ -9,6 +9,11 @@ module.exports = {
         return new HDWalletProvider(mnemonic, "https://ropsten.infura.io/v3/ddbff6fa55104229b1494db2dcedb1cb")
       },
       network_id: 3
+    },
+    test: {
+      host: "127.0.0.1",
+      port: 8545,
+      network_id: "*"
     }
   },
   compilers: {
