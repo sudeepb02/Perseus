@@ -17,6 +17,11 @@ Perseus is supposed to be fun. We wanted users to be able to deploy easily and c
 - Making Perseus social
 
 
+## Team Members
+- Michael Cohen @michaelcohen716
+- Sudeep Biswas @sudeepb02
+
+
 ## Running Perseus
 
 Perseus will be deployed shortly at [perseus.online](https://perseus.online). You can run it locally with ```npm install && npm start```. For now, Perseus is only deployed on Ropsten.
