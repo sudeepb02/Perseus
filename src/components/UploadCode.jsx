@@ -4,6 +4,7 @@ import Button from "./common/Button";
 import Dropzone from "react-dropzone";
 import Arweave from "arweave/web";
 import jwk from "../arweave-keyfile.json";
+import Loading from "./common/Loading";
 import "./UploadCode.css";
 
 const TYPES = ["Single", "Directory"];
@@ -15,12 +16,16 @@ const ipfs = new IPFS({
   protocol: "https"
 });
 
-function UploadCode({ setIpfsHash, ipfsHash, setStep }) {
+function UploadCode({
+  setIpfsHash,
+  ipfsHash,
+  setStep,
+  setArweaveTxId,
+  arweaveTxId
+}) {
   const [files, setFiles] = useState(null);
   const [filesUploaded, toggleFilesUploaded] = useState(false);
   const [activeType, setActiveType] = useState(TYPES[0]);
-  const [transactionId, setTransactionId] = useState("");
-  const [ipfsReturn, receiveIpfsReturn] = useState(null); // delete?
   const [nextStep, readyNextStep] = useState(false);
   const [uploadInProgress, toggleUploadInProgress] = useState(false);
 
@@ -45,7 +50,7 @@ function UploadCode({ setIpfsHash, ipfsHash, setStep }) {
     });
 
     arweave.wallets.jwkToAddress(jwk).then(address => {
-      // console.log(address);
+      console.log("arweave address", address);
     });
 
     arweave.wallets
@@ -54,7 +59,7 @@ function UploadCode({ setIpfsHash, ipfsHash, setStep }) {
         let winston = balance;
         let ar = arweave.ar.winstonToAr(balance);
 
-        console.log("balance", ar);
+        console.log("arweave balance", ar);
       });
 
     let transaction = await arweave.createTransaction(
@@ -68,31 +73,30 @@ function UploadCode({ setIpfsHash, ipfsHash, setStep }) {
     await arweave.transactions.sign(transaction, jwk);
 
     const response = await arweave.transactions.post(transaction);
+
     let txId = JSON.parse(response.config.data)["id"];
-    setTransactionId(txId);
-    
+    console.log("arweave tx-id", txId);
+    setArweaveTxId(txId);
+
     await addToIpfs(txId);
   };
-  
+
   useEffect(() => {
     if (ipfsHash) {
       readyNextStep(true);
       toggleUploadInProgress(false);
-      console.log("in useeffect ipfs hash", ipfsHash);
     }
   }, [ipfsHash]);
-  
+
   const addToIpfs = async hash => {
-    const testHash = "QmYZmKiV1ZsxPuanPfDXavDzGNJYV2BHnXdrNpfc2WU8Ja";
     const htmlfile = hash =>
-    `<!DOCTYPE HTML>< html lang = "en-US" ><head> <meta charset="UTF-8"><meta http-equiv="refresh" content="0; url=https://arweave.net/${hash}"><script type="text/javascript">window.location.href = "https://arweave.net/${hash}"</script><title>Page Redirection</title></head><body>If you are not redirected automatically, follow this <a href='https://arweave.net/${hash}'>Click if not automatically redirected</a>.</body></html>`;
-    
+      `<!DOCTYPE HTML><head> <meta charset="UTF-8"><meta http-equiv="refresh" content="0; url=https://arweave.net/${hash}"><script type="text/javascript">window.location.href = "https://arweave.net/${hash}"</script><title>Page Redirection</title></head><body>If you are not redirected automatically, follow this <a href='https://arweave.net/${hash}'>Click if not automatically redirected</a>.</body></html>`;
+
     const file = htmlfile(hash);
     const buffer = Buffer.from(file, "utf8");
     await ipfs.add(buffer, (err, ipfsHash) => {
       setIpfsHash(ipfsHash[0].path);
-      console.log("ipfs hash[0].path", ipfsHash[0].path)
-      console.log("ipfs hash[path]", ipfsHash["path"])
+      console.log("upload code - ipfs hash", ipfsHash[0].path);
     });
 
     return true;
@@ -108,7 +112,7 @@ function UploadCode({ setIpfsHash, ipfsHash, setStep }) {
           }`}
           onClick={() => setActiveType(TYPES[0])}
         >
-          Upload Single File
+          Upload Single HTML File
         </div>
         <div
           className={`text-muted type-select py-2 px-3 ${
@@ -155,7 +159,9 @@ function UploadCode({ setIpfsHash, ipfsHash, setStep }) {
           <Button onClick={upload} disabled={!files} text="Upload" />
         )
       ) : (
-        <div className="mx-auto mt-4">Uploading...</div>
+        <div className="mx-auto mt-4">
+          <Loading />
+        </div>
       )}
     </div>
   );

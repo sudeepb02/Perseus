@@ -10,13 +10,22 @@ export const portis = new Portis(
   // { gasRelay: true }
 );
 
-export const web3 = new Web3(portis.provider);
+// export const web3 = new Web3(portis.provider);
+export const web3 = new Web3(window.web3.currentProvider);
 
-const subdomainContractAdress = "0xb478d80d850f1e8bd1322f9ecdcf24e4ec941684";
+export const subdomainContractAdress = "0xb478d80d850f1e8bd1322f9ecdcf24e4ec941684";
 
 async function SubdomainContract() {
   let contr = contract(SubdomainRegistrar);
   contr.setProvider(portis.provider);
+  contr = contr.at(subdomainContractAdress);
+
+  return contr;
+}
+
+export async function SubdomainContractMetamask() {
+  let contr = contract(SubdomainRegistrar);
+  contr.setProvider(window.web3.currentProvider);
   contr = contr.at(subdomainContractAdress);
 
   return contr;
@@ -33,7 +42,6 @@ export async function registerSubdomain(
   let contr = await SubdomainContract();
 
   const accounts = await portis.provider.enable();
-  console.log("accounts", accounts[0])
 
   await contr.register(
     "0x" + sha3(label),
@@ -46,4 +54,29 @@ export async function registerSubdomain(
       from: accounts[0]
     }
   );
+}
+
+export async function registerSubdomainMetamask(
+  label,
+  subdomain,
+  subdomainOwner,
+  referrer,
+  resolver,
+  contentHash
+) {
+  let contr = await SubdomainContractMetamask();
+
+  // const accounts = await portis.provider.enable();
+
+  await contr.register(
+    "0x" + sha3(label),
+    subdomain,
+    subdomainOwner,
+    referrer,
+    resolver,
+    contentHash,
+    {
+      from: web3.eth.currentProvider.selectedAddress
+    }
+  ).then(tx => tx)
 }

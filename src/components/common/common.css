@@ -21,3 +21,18 @@
   background-color: white;
   color: black;
 }
+
+.loading-logo {
+  animation: Loading-logo-spin infinite 10s linear;
+  height: 40px;
+  pointer-events: none;
+}
+
+@keyframes Loading-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
