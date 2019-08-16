@@ -22,3 +22,12 @@ input:focus {
   font-size: 24px;
   margin-top: 20px;
 }
+
+.domain-link {
+  color: blue;
+}
+
+.domain-link:hover {
+  color: white;
+  cursor: pointer;
+}

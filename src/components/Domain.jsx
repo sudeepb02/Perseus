@@ -1,10 +1,13 @@
 import React, { useState } from "react";
 import Instruction from "./common/Instruction";
 import Button from "./common/Button";
-import { web3 } from "../services/web3";
+import Loading from "./common/Loading";
+import contentHashLib from "content-hash";
+import {
+  registerSubdomainMetamask,
+  SubdomainContractMetamask
+} from "../services/web3";
 import "./Domain.css";
-
-import { registerSubdomain } from "../services/web3";
 
 const IPFS = require("ipfs-api");
 const ipfs = new IPFS({
@@ -13,49 +16,75 @@ const ipfs = new IPFS({
   protocol: "https"
 });
 
-function Domain({ setStep, activeAddress, ipfsHash }) {
-  const [domainName, setDomainName] = useState("");
+function Domain({ activeAddress, ipfsHash, subdomainName, setSubdomainName }) {
+  const [txProcessing, toggleTxProcessing] = useState(false);
+  const [flowComplete, toggleFlowComplete] = useState(false);
 
-
-  let testHash = "QmYXf7cKsRH2NrQkrTxdK6STT18vdEZ7JzLSHqQLJaDsYw"
-
-  const register = async() => {
+  const register = async () => {
     const dom = "beanbag";
-    const subD = "michael123";
-    const from = activeAddress
-    
-    const referrerAddress = "0x6c13cacf07bac2a5abb6a4d12527488a6a64b321";
-    const resolverAddress = "0x9C4c3B509e47a298544d0fD0591B47550845e903";
-    
-    testHash = web3.utils.fromAscii(`ipfs://${testHash}`)
-    // const contentHash = web3.utils.fromAscii(`ipfs://${ipfsHash}`)
+    const subD = subdomainName;
 
-    await registerSubdomain(
+    const referrerAddress = "0x6c13cacf07bac2a5abb6a4d12527488a6a64b321";//beanbag
+    const resolverAddress = "0x9C4c3B509e47a298544d0fD0591B47550845e903"; 
+
+    const contentHash = "0x" + contentHashLib.fromIpfs(ipfsHash);
+
+    watchForRegistration();
+    toggleTxProcessing(true);
+    await registerSubdomainMetamask(
       dom,
       subD, //subdomain
-      referrerAddress, //subdomain owner tester
-      // activeAddress, //_subdomainOwner
+      activeAddress, //_subdomainOwner
       referrerAddress, //referrer
       resolverAddress, //resolver
-      testHash,
-      // contentHash,
-      // from
-    )
-  }
+      contentHash
+    );
+  };
+
+  const watchForRegistration = async () => {
+    const contr = await SubdomainContractMetamask();
+    contr.NewRegistration().on("data", evt => {
+      console.log("event-truffle-contr", evt);
+      toggleTxProcessing(false);
+      toggleFlowComplete(true);
+    });
+  };
 
   return (
     <div className="d-flex flex-column domain mt-3 animated fadeIn">
       <Instruction text="Step 2: Choose a Domain" />
       <div className="d-flex">
         <input
-          value={domainName}
-          onChange={e => setDomainName(e.target.value)}
+          value={subdomainName}
+          onChange={e => setSubdomainName(e.target.value)}
           className="domain-input mt-3 p-1"
           autoFocus={true}
         />
-        <div className="url-text">.perseusweb.eth</div>
+        <div className="url-text">.beanbag.eth</div>
       </div>
-      <Button className="mt-5" text="Deploy" onClick={register} />
+      {txProcessing ? (
+        <div className="mt-5 mx-auto">
+          <Loading />
+        </div>
+      ) : flowComplete ? (
+        <div className="mt-5 mx-auto d-flex flex-column">
+          <div className="domain-info mx-auto">
+            Congrats! Your site will be deployed shortly at
+          </div>
+          <a
+            target="_blank"
+            href={`https://${subdomainName}.beanbag.eth`}
+            className="domain-link mt-1 mx-auto"
+          >
+            {`${subdomainName}.beanbag.eth`}
+          </a>
+          <div className="domain-info mt-1 mx-auto">
+            Be sure to allow 20-30 minutes for full deployment
+          </div>
+        </div>
+      ) : (
+        <Button className="mt-5" text="Deploy" onClick={register} />
+      )}
     </div>
   );
 }
