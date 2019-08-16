@@ -19,7 +19,7 @@ Perseus is supposed to be fun. We wanted users to be able to deploy easily and c
 
 ## Running Perseus
 
-Perseus will be deployed shortly at [perseus.online](https://perseus.online). For now, you can run it locally with ```npm install && npm start```. For now, Perseus is only deployed on Ropsten.
+Perseus will be deployed shortly at [perseus.online](https://perseus.online). You can run it locally with ```npm install && npm start```. For now, Perseus is only deployed on Ropsten.
 
 ![perseus-1](./src/assets/perseus-1.png)
 ![perseus-2](./src/assets/perseus-2.png)
