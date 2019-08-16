@@ -67,18 +67,18 @@ function Domain({ activeAddress, ipfsHash, subdomainName, setSubdomainName }) {
           <Loading />
         </div>
       ) : flowComplete ? (
-        <div className="mt-5 mx-auto d-flex flex column">
-          <div className="domain-info">
+        <div className="mt-5 mx-auto d-flex flex-column">
+          <div className="domain-info mx-auto">
             Congrats! Your site will be deployed shortly at
           </div>
           <a
             target="_blank"
             href={`https://${subdomainName}.beanbag.eth`}
-            className="domain-link mt-1"
+            className="domain-link mt-1 mx-auto"
           >
             {`${subdomainName}.beanbag.eth`}
           </a>
-          <div className="domain-info mt-1">
+          <div className="domain-info mt-1 mx-auto">
             Be sure to allow 20-30 minutes for full deployment
           </div>
         </div>
