@@ -1,5 +1,7 @@
 # Perseus
 
+*** We're still working out some kinks in the platform...you may need to add ```window.ethereum.enable()``` on line 11 of ```src/components/Steps.jsx``` ***
+
 > Perseus is the simplest gateway to the decentralized web. With the benefit of Arweave, ENS and IPFS, users can post and host and share with others seamlessly.
 
 ## Why did we build Perseus?
