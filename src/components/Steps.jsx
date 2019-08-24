@@ -7,7 +7,11 @@ const Step = text => <div className="step-text my-3">{text}</div>;
 
 function Steps({ setStep, setActiveAddress }) {
   
-  const loginPortis = () => {
+  const login = () => {
+    if(window.ethereum){
+      window.ethereum.enable();
+    }
+
   	setStep(0);
   	web3.eth.getAccounts((error, accounts) => {
       setActiveAddress(accounts[0])
@@ -21,7 +25,7 @@ function Steps({ setStep, setActiveAddress }) {
       {Step("2) Choose an ENS Domain")}
       {Step("3) Deploy")}
 
-      <Button text="Get Started" onClick={loginPortis} />
+      <Button text="Get Started" onClick={login} />
     </div>
   );
 }
