@@ -33,7 +33,8 @@ function Domain({
 
     watchForRegistration();
     toggleTxProcessing(true);
-    await registerSubdomainMetamask(
+    console.log(
+    // await registerSubdomainMetamask(
       dom,
       subD, //subdomain
       activeAddress, //_subdomainOwner

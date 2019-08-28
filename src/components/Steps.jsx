@@ -7,15 +7,14 @@ const Step = text => <div className="step-text my-3">{text}</div>;
 
 function Steps({ setStep, setActiveAddress }) {
   
-  const login = () => {
+  const login = async() => {
     if(window.ethereum){
-      window.ethereum.enable();
+      await window.ethereum.enable();
+      setStep(0);
+      web3.eth.getAccounts((error, accounts) => {
+        setActiveAddress(accounts[0])
+      });
     }
-
-  	setStep(0);
-  	web3.eth.getAccounts((error, accounts) => {
-      setActiveAddress(accounts[0])
-  	});
   }
   
   return (
