@@ -9,23 +9,25 @@ import {
 } from "../services/web3";
 import "./Domain.css";
 
-const IPFS = require("ipfs-api");
-const ipfs = new IPFS({
-  host: "ipfs.infura.io",
-  port: 5001,
-  protocol: "https"
-});
-
-function Domain({ activeAddress, ipfsHash, subdomainName, setSubdomainName }) {
+function Domain({
+  activeAddress,
+  ipfsHash,
+  subdomainName,
+  setSubdomainName,
+  domainName,
+  setDomainName,
+  domains
+}) {
   const [txProcessing, toggleTxProcessing] = useState(false);
   const [flowComplete, toggleFlowComplete] = useState(false);
+  const [showDropdown, toggleShowDropdown] = useState(false);
 
   const register = async () => {
-    const dom = "beanbag";
+    const dom = domainName;
     const subD = subdomainName;
 
-    const referrerAddress = "0x6c13cacf07bac2a5abb6a4d12527488a6a64b321";//beanbag
-    const resolverAddress = "0x9C4c3B509e47a298544d0fD0591B47550845e903"; 
+    const referrerAddress = "0x6c13cacf07bac2a5abb6a4d12527488a6a64b321"; 
+    const resolverAddress = "0x9C4c3B509e47a298544d0fD0591B47550845e903";
 
     const contentHash = "0x" + contentHashLib.fromIpfs(ipfsHash);
 
@@ -44,11 +46,18 @@ function Domain({ activeAddress, ipfsHash, subdomainName, setSubdomainName }) {
   const watchForRegistration = async () => {
     const contr = await SubdomainContractMetamask();
     contr.NewRegistration().on("data", evt => {
-      console.log("event-truffle-contr", evt);
+      console.log("event-new-registration", evt);
       toggleTxProcessing(false);
       toggleFlowComplete(true);
     });
   };
+
+  function DropdownItem({ text }) {
+    return <div onClick={() => {
+      toggleShowDropdown(false);
+      setDomainName(text);
+    }} className="dropdown-item p-1 d-flex justify-content-end">{text}</div>;
+  }
 
   return (
     <div className="d-flex flex-column domain mt-3 animated fadeIn">
@@ -60,7 +69,25 @@ function Domain({ activeAddress, ipfsHash, subdomainName, setSubdomainName }) {
           className="domain-input mt-3 p-1"
           autoFocus={true}
         />
-        <div className="url-text">.beanbag.eth</div>
+        <div className="subdomain-selector position-relative">
+          <div className="d-flex position-relative">
+            <div className="url-text">.{domainName}</div>
+            <div className="position-relative">
+              <div
+                className="dropdown-arrow position-absolute"
+                onClick={() => toggleShowDropdown(!showDropdown)}
+              />
+            </div>
+          </div>
+          {showDropdown && (
+            <div className="subdomain-dropdown position-absolute d-flex flex-column w-100">
+              {domains.map((d, i) => {
+                return <DropdownItem text={d} key={i} />;
+              })}
+            </div>
+          )}
+        </div>
+        <div className="url-text ml-4">.eth</div>
       </div>
       {txProcessing ? (
         <div className="mt-5 mx-auto">
@@ -73,7 +100,7 @@ function Domain({ activeAddress, ipfsHash, subdomainName, setSubdomainName }) {
           </div>
           <a
             target="_blank"
-            href={`https://${subdomainName}.beanbag.eth`}
+            href={`https://${subdomainName}.${domainName}.eth`}
             className="domain-link mt-1 mx-auto"
           >
             {`${subdomainName}.beanbag.eth`}

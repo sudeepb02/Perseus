@@ -2,8 +2,6 @@ import React, { useState, useEffect } from "react";
 import Instruction from "./common/Instruction";
 import Button from "./common/Button";
 import Dropzone from "react-dropzone";
-import Arweave from "arweave/web";
-import jwk from "../arweave-keyfile.json";
 import Loading from "./common/Loading";
 import "./UploadCode.css";
 
@@ -20,8 +18,6 @@ function UploadCode({
   setIpfsHash,
   ipfsHash,
   setStep,
-  setArweaveTxId,
-  arweaveTxId
 }) {
   const [files, setFiles] = useState(null);
   const [filesUploaded, toggleFilesUploaded] = useState(false);
@@ -44,41 +40,8 @@ function UploadCode({
 
   const upload = async () => {
     toggleUploadInProgress(true);
-    const arweave = Arweave.init({
-      host: "arweave.net",
-      port: "80"
-    });
 
-    arweave.wallets.jwkToAddress(jwk).then(address => {
-      console.log("arweave address", address);
-    });
-
-    arweave.wallets
-      .getBalance("a2tBnI_YOYnXg1IWabrfTb8nGzPQA67CrvATDym0NYM")
-      .then(balance => {
-        let winston = balance;
-        let ar = arweave.ar.winstonToAr(balance);
-
-        console.log("arweave balance", ar);
-      });
-
-    let transaction = await arweave.createTransaction(
-      {
-        data: files
-      },
-      jwk
-    );
-
-    transaction.addTag("Content-Type", "text/html");
-    await arweave.transactions.sign(transaction, jwk);
-
-    const response = await arweave.transactions.post(transaction);
-
-    let txId = JSON.parse(response.config.data)["id"];
-    console.log("arweave tx-id", txId);
-    setArweaveTxId(txId);
-
-    await addToIpfs(txId);
+    await addToIpfs();
   };
 
   useEffect(() => {
@@ -88,15 +51,13 @@ function UploadCode({
     }
   }, [ipfsHash]);
 
-  const addToIpfs = async hash => {
-    const htmlfile = hash =>
-      `<!DOCTYPE HTML><head> <meta charset="UTF-8"><meta http-equiv="refresh" content="0; url=https://arweave.net/${hash}"><script type="text/javascript">window.location.href = "https://arweave.net/${hash}"</script><title>Page Redirection</title></head><body>If you are not redirected automatically, follow this <a href='https://arweave.net/${hash}'>Click if not automatically redirected</a>.</body></html>`;
-
-    const file = htmlfile(hash);
+  const addToIpfs = async() => {
+    const file = files;
+    console.log("file", file)
     const buffer = Buffer.from(file, "utf8");
-    await ipfs.add(buffer, (err, ipfsHash) => {
-      setIpfsHash(ipfsHash[0].path);
-      console.log("upload code - ipfs hash", ipfsHash[0].path);
+    await ipfs.add(buffer, (err, ipfsHashResult) => {
+      setIpfsHash(ipfsHashResult[0].path);
+      console.log("upload code - ipfs hash", ipfsHashResult[0].path);
     });
 
     return true;
@@ -156,7 +117,8 @@ function UploadCode({
         nextStep ? (
           <Button onClick={() => setStep(1)} text="Next" />
         ) : (
-          <Button onClick={upload} disabled={!files} text="Upload" />
+          <Button onClick={upload} text="Upload" />
+          // <Button onClick={upload} disabled={!files} text="Upload" />
         )
       ) : (
         <div className="mx-auto mt-4">

@@ -3,12 +3,15 @@ import Steps from "./Steps";
 import Domain from "./Domain";
 import UploadCode from "./UploadCode";
 
+const DOMAINS = ["perseus", "nemesis", "beanbag"];
+
 function Base() {
   const [step, setStep] = useState(-1);
   const [activeAddress, setActiveAddress] = useState("");
   const [ipfsHash, setIpfsHash] = useState("");
   const [arweaveTxId, setArweaveTxId] = useState("")
   const [subdomainName, setSubdomainName] = useState("");
+  const [domainName, setDomainName] = useState(DOMAINS[0]);
 
   const getView = () => {
     switch (step) {
@@ -35,6 +38,9 @@ function Base() {
             activeAddress={activeAddress}
             subdomainName={subdomainName}
             setSubdomainName={setSubdomainName}
+            domainName={domainName}
+            setDomainName={setDomainName}
+            domains={DOMAINS}
           />
         );
 
